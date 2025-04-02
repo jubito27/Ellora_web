@@ -30,7 +30,8 @@ except Exception as e:
 SYSTEM_PROMPT = """You are Ellora AI, created by Abhishek Sharma. Follow these rules:
 1. When asked your name, respond: "My name is Ellora AI"
 2. When asked about creator, respond: "I was created by Abhishek Sharma"
-3. Never describe yourself as just an AI model"""
+3. Never describe yourself as just an AI model
+4. If asked casual questions like 'What's up?' or 'Hello', respond politely but keep it brief. Don't give long explanations about yourself."""
 
 @app.route('/')
 def home():
@@ -41,6 +42,8 @@ def health_check():
 
 def generate_response(user_input):
     try:
+        if model is None:
+            raise ValueError("Model is not loaded.")
         if not isinstance(user_input, str) or len(user_input.strip()) == 0:
             raise ValueError("Empty input")
         prompt = f"""<|system|>{SYSTEM_PROMPT}</s><|user|>{user_input}</s><|assistant|>"""
@@ -110,9 +113,9 @@ def chat():
         traceback.print_exc()
         return jsonify({"response": "I'm having trouble processing your request"}), 500
 
-# if __name__ == '__main__':
-#     port = int(os.environ.get('PORT', 5001))
-#     app.run(host='0.0.0.0', port=port , debug=True)
+# # if __name__ == '__main__':
+# #     port = int(os.environ.get('PORT', 5001))
+# #     app.run(host='0.0.0.0', port=port , debug=True)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
@@ -203,3 +206,81 @@ if __name__ == '__main__':
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=5001, threaded=True)
+
+# from flask import Flask, request, jsonify, Response
+# from flask_cors import CORS
+# from huggingface_hub import InferenceClient
+# import json
+
+# app = Flask(__name__)
+# CORS(app)
+
+# # Initialize the Hugging Face Inference Client
+# client = InferenceClient("HuggingFaceH4/zephyr-7b-beta")
+
+# SYSTEM_PROMPT = """You are Ellora AI, a helpful assistant created by Abhishek Sharma. 
+# Always respond with:
+# - "My name is Ellora AI" when asked your name
+# - "I was created by Abhishek Sharma" when asked about creator
+# Keep responses clear and concise."""
+
+# @app.route('/')
+# def home():
+#     return app.send_static_file('index.html')
+# @app.route('/health')
+# def health_check():
+#     return jsonify({"status": "healthy"})
+
+
+
+# @app.route('/chat', methods=['POST'])
+# def chat():
+#     try:
+#         data = request.get_json()
+#         if not data:
+#             return jsonify({"error": "No data received"}), 400
+            
+#         user_message = data.get('message', '')
+#         history = data.get('history', [])
+        
+#         # Handle identity questions
+#         if "your name" in user_message.lower():
+#             return jsonify({"response": "My name is Ellora AI"})
+#         if "who created you" in user_message.lower():
+#             return jsonify({"response": "I was created by Abhishek Sharma"})
+        
+#         def generate():
+#             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            
+#             # Add conversation history
+#             for user_msg, bot_msg in history:
+#                 if user_msg:
+#                     messages.append({"role": "user", "content": user_msg})
+#                 if bot_msg:
+#                     messages.append({"role": "assistant", "content": bot_msg})
+            
+#             messages.append({"role": "user", "content": user_message})
+            
+#             response = ""
+#             try:
+#                 for message in client.chat_completion(
+#                     messages,
+#                     max_tokens=200,
+#                     stream=True,
+#                     temperature=0.7,
+#                     top_p=0.9
+#                 ):
+#                     token = message.choices[0].delta.content
+#                     if token:
+#                         response += token
+#                         yield f"data: {json.dumps({'response': response, 'token': token})}\n\n"
+#             finally:
+#                 yield "data: [DONE]\n\n"
+        
+#         return Response(generate(), mimetype='text/event-stream')
+    
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+    
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5001, debug=True)
