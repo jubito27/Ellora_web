@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ellora AI - Authentication</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f0f0f;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-container {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            width: 400px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #2a2a2a;
+            color: white;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        input::placeholder {
+            color: #666;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #333;
+        }
+
+        .divider span {
+            padding: 0 16px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 14px;
+            background: #2a2a2a;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-google:hover {
+            background: #333;
+            border-color: #4f46e5;
+        }
+
+        .google-btn i {
+            color: #4285f4;
+            font-size: 18px;
+        }
+
+        .btn-facebook { 
+            color: #fff; 
+            background: #2a2a2a;
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-facebook:hover { background: #365899; }
+
+        .error {
+            color: #ef4444;
+            margin-bottom: 15px;
+            font-size: 14px;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .back-to-app {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .back-link {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #4338ca;
+            text-decoration: underline;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #666;
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            Ellora AI
+        </div>
+        <p class="subtitle">Join thousands of users exploring AI</p>
+        
+        <div id="error-message" class="error" style="display: none;"></div>
+        
+        <!-- Tabs -->
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <!-- Google Sign In -->
+        <button class="btn-auth btn-google" onclick="window.location='/auth/google'">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" width="22" style="margin-right:8px;"> Continue with Google
+        </button>
+
+        <!-- Facebook Sign In -->
+        <button class="btn-auth btn-facebook" onclick="window.location='/auth/facebook'">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" width="22" style="margin-right:8px;"> Continue with Facebook
+        </button>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form" class="form-container active">
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn" id="loginBtn">
+                    <span class="btn-text">Login</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="signup-form" class="form-container">
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" placeholder="Create a password" required minlength="6">
+                </div>
+                <button type="submit" class="btn" id="signupBtn">
+                    <span class="btn-text">Create Account</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="back-to-app">
+            <a href="/" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Ellora AI
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'login';
+
+        // Initialize based on URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode') || 'login';
+            const error = urlParams.get('error');
+            
+            if (error) {
+                showError('Authentication failed. Please try again.');
+            }
+            
+            switchTab(mode);
+        });
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
+            document.getElementById(`${tab}-form`).classList.add('active');
+            
+            // Update Google button text
+            document.getElementById('googleBtnText').textContent = 
+                tab === 'login' ? 'Continue with Google' : 'Sign up with Google';
+            
+            hideError();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function showLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            const btnText = btn.querySelector('.btn-text');
+            btnText.innerHTML = '<span class="loading"></span>';
+            btn.disabled = true;
+        }
+
+        function hideLoading(btnId, originalText) {
+            const btn = document.getElementById(btnId);
+            const btnText = btn.querySelector('.btn-text');
+            btnText.textContent = originalText;
+            btn.disabled = false;
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            hideError();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            showLoading('loginBtn');
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    showError(data.error || 'Login failed');
+                    hideLoading('loginBtn', 'Login');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                hideLoading('loginBtn', 'Login');
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            hideError();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            showLoading('signupBtn');
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    showError(data.error || 'Registration failed');
+                    hideLoading('signupBtn', 'Create Account');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                hideLoading('signupBtn', 'Create Account');
+            }
+        }
+
+        function signInWithGoogle() {
+            window.location.href = '/auth/google';
+        }
+    </script>
+</body>
+</html>
