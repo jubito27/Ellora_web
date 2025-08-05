@@ -1,6 +1,10 @@
-flask>=2.0.0
-huggingface-hub>=0.20.0
-transformers
-torch
-accelerate 
-sentencepiece
+Flask>=2.2
+flask-cors
+firebase-admin
+google-generativeai
+pillow
+gTTS
+speechrecognition
+authlib
+gunicorn
+
