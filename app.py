@@ -32,7 +32,7 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 # Initialize Firebase Admin SDK
 # Download service account key from Firebase Console -> Project Settings -> Service Accounts
 try:
-    cred = credentials.Certificate(r'C:\Users\Abhishek sharma\OneDrive\Desktop\python projects\machine learning\Project Ellora AI\ellora-ai-firebase-adminsdk-fbsvc-f26cc44096.json')  # Update this path
+    cred = credentials.Certificate('ellora-ai-firebase-adminsdk-fbsvc-f26cc44096.json')  # Update this path
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://ellora-ai-default-rtdb.firebaseio.com/'  # Update this URL
     })
@@ -537,4 +537,5 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
