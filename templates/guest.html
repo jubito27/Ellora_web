@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ellora AI</title>
+    <title> Ellora AI</title>
+    <link rel="icon" href="\assests\elloraicon.svg" type="image/x-icon">
+    <link rel="icon" href="\assests\elloraicon.svg" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
@@ -170,8 +173,12 @@
     </style>
 </head>
 <body class="min-h-screen">
+
+    <button id="openSidebarBtn" class="fixed top-4 left-4 z-50 bg-blue-600 text-white rounded-full p-3 shadow-lg "                 style="display:none;">
+        <i class="fas fa-bars"></i>
+    </button>
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed left-0 top-0 w-72 h-full sidebar transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-50">
+    <div id="sidebar" class="fixed left-0 top-0 w-72 h-full sidebar transform -translate-x-full transition-transform duration-300 z-50">
         <div class="p-6">
             <!-- Logo -->
             <div class="flex items-center mb-8">
@@ -180,6 +187,10 @@
                 </div>
                 <h1 class="text-xl font-bold gradient-text">Ellora AI</h1>
             </div>
+
+        <button id="closeSidebarBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white " title="Hide sidebar">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
             
             <!-- New Chat Button -->
             <button id="new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg mb-6 transition-colors duration-200">
@@ -759,11 +770,66 @@
                 });
             }
         };
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // initialize the app
+
+                new ElloraAI()
+
+            //sdiebar functionality
+                const sidebar   = document.getElementById('sidebar');
+                const closeBtn  = document.getElementById('closeSidebarBtn');
+                const openBtn   = document.getElementById('openSidebarBtn');
+
+                // Helper: Hide sidebar (mobile)
+                function hideSidebar() {
+                    sidebar.classList.add('-translate-x-full');
+                    openBtn.style.display = 'block';
+                }
+                // Helper: Show sidebar (mobile)
+                function showSidebar() {
+                    sidebar.classList.remove('-translate-x-full');
+                    openBtn.style.display = 'none';
+                }
+
+                closeBtn?.addEventListener('click', hideSidebar);
+                openBtn?.addEventListener('click', showSidebar);
+
+                // Optional: Hide sidebar by default on mobile when page loads
+                if (window.innerWidth <= 1024) {
+                    hideSidebar();
+                }
+
+                if (window.innerWidth > 1024) {
+                    showSidebar();
+                } else {
+                    hideSidebar();
+                }
+
+
+                // Optional: Hide sidebar when clicking outside on mobile
+                document.addEventListener('click', function(e) {
+                    // Only on mobile, and only if sidebar is open and click is outside
+                    if(window.innerWidth <= 1024 && !sidebar.classList.contains('-translate-x-full')) {
+                        if (!sidebar.contains(e.target) && !openBtn.contains(e.target)) {
+                            hideSidebar();
+                        }
+                    }
+                });
+
+            // Optional: Auto-hide/sidebar on resize
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 1024) {
+                        showSidebar();
+                    } else {
+                        hideSidebar();
+                    }
+                });
+            });
+
         
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', () => {
-            new ElloraAI();
-        });
+             
     </script>
 </body>
 </html>
