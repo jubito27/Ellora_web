@@ -35,17 +35,15 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize Firebase Admin SDK
-try:
-    cred = credentials.Certificate(
-        os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON") 
-    )
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://ellora-ai-default-rtdb.firebaseio.com/'
-    })
-    app.logger.info("Firebase initialized successfully")
-except Exception as e:
-    app.logger.exception("Firebase initialization error")
+firebase_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+if not firebase_json:
+    raise RuntimeError("Missing FIREBASE_SERVICE_ACCOUNT_JSON env var")
+
+cred = credentials.Certificate(json.loads(firebase_json))
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://ellora-ai-default-rtdb.firebaseio.com/'
+})
+app.logger.info("Firebase initialized successfully")
 
 # Configure Gemini/Google Generative AI
 try:
@@ -498,5 +496,6 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
 
