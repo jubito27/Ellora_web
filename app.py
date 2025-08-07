@@ -345,21 +345,34 @@ def google_login():
 
 @app.route('/auth/google/callback')
 def google_callback():
-    token = google.authorize_access_token()
-    user_info = token['userinfo']
-    email = user_info['email']
-    name = user_info.get('name', 'User')
-    photo = user_info.get('picture')
     try:
-        user = auth.get_user_by_email(email)
-    except Exception:
-        user = auth.create_user(email=email, display_name=name)
-    session['user_id'] = user.uid
-    session['user_email'] = email
-    session['user_name'] = name
-    session['profile_photo'] = photo
-    session['provider'] = 'google'
-    return redirect('/')
+        token = google.authorize_access_token()
+        user_info = token.get('userinfo')
+        if not user_info:
+            return "No userinfo returned from Google.", 400
+
+        email = user_info.get('email')
+        name = user_info.get('name', 'User')
+        photo = user_info.get('picture')
+
+        if not email:
+            return "Google account did not provide an email address.", 400
+
+        try:
+            user = auth.get_user_by_email(email)
+        except firebase_admin._auth_utils.UserNotFoundError:
+            # If user doesn't exist, create one.
+            user = auth.create_user(email=email, display_name=name)
+        session['user_id'] = user.uid
+        session['user_email'] = email
+        session['user_name'] = name
+        session['profile_photo'] = photo
+        session['provider'] = 'google'
+        return redirect('/')
+    except Exception as e:
+        app.logger.error(f"Google login callback error: {e}")
+        return "An error occurred during Google login.", 500
+
 
 # --- Facebook Auth ---
 @app.route('/auth/facebook')
@@ -486,3 +499,4 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
