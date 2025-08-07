@@ -38,8 +38,7 @@ logging.basicConfig(level=logging.INFO)
 # Initialize Firebase Admin SDK
 try:
     cred = credentials.Certificate(
-        os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON") or
-        r'C:\Users\Abhishek sharma\OneDrive\Desktop\python projects\machine learning\Project Ellora AI\ellora-ai-firebase-adminsdk-fbsvc-f26cc44096.json'
+        os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON") 
     )
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://ellora-ai-default-rtdb.firebaseio.com/'
@@ -499,4 +498,5 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
