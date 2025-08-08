@@ -37,16 +37,25 @@ logging.basicConfig(level=logging.INFO)
 
 # Initialize Firebase Admin SDK
 try:
-    cred = credentials.Certificate(
-        os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON") 
-    )
+    # Get the service account JSON from environment variable
+    service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+
+    if not service_account_json:
+        raise ValueError("FIREBASE_SERVICE_ACCOUNT_JSON environment variable not set")
+
+    # Parse JSON string into Python dict
+    service_account_dict = json.loads(service_account_json)
+
+    # Create credentials from dict
+    cred = credentials.Certificate(service_account_dict)
+
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://ellora-ai-default-rtdb.firebaseio.com/'
     })
-    app.logger.info("Firebase initialized successfully")
-except Exception as e:
-    app.logger.exception("Firebase initialization error")
+    print("Firebase initialized successfully")
 
+except Exception as e:
+    print(f"Firebase initialization error: {e}")
 # Configure Gemini/Google Generative AI
 try:
     genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
@@ -498,6 +507,7 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
 
 
