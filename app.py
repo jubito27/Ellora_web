@@ -42,6 +42,7 @@ try:
 
     if not service_account_json:
         raise ValueError("FIREBASE_SERVICE_ACCOUNT_JSON environment variable not set")
+        print("Firebase not Initialized")
 
     # Parse JSON string into Python dict
     service_account_dict = json.loads(service_account_json)
@@ -507,6 +508,7 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
 
 
