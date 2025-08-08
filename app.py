@@ -141,7 +141,7 @@ def get_instruction(role):
     return instructions.get(role, "You are Ellora AI, a helpful assistant created by Abhishek Sharma.")
 
 def get_access_token():
-    service_account_file = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+    service_account_file = os.getenv("GOOGLE_SERVICE_ACCOUNT")
     if not service_account_file or not os.path.exists(service_account_file):
         raise ValueError("Service account file not found or environment variable not set")
 
@@ -508,6 +508,7 @@ def text_to_speech():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
 
 
 
