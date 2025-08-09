@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ellora AI</title>
+    <title >Ellora AI</title>
+    <link rel="icon" href="favicon-emoji.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -32,8 +33,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 24px;
-            border-bottom: 1px solid #333;
-            background: #1a1a1a;
+            border-bottom: 0px solid #333;
+            background: #0f0f0f;
         }
 
         .logo {
@@ -47,6 +48,13 @@
         .logo i {
             margin-right: 8px;
             color: #4f46e5;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header-right {
@@ -80,11 +88,31 @@
             background: #b91c1c;
         }
 
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            padding-right: 0.2cm;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
         /* Main Container */
         .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
+            background-color: #1a1a1a;
         }
 
         .code-block {
@@ -127,9 +155,9 @@
         
 
         /* Sidebar */
-        .sidebar {
+        #sidebar {
             width: 260px;
-            background: #1a1a1a;
+            background: #0f0f0f;
             border-right: 1px solid #333;
             display: flex;
             flex-direction: column;
@@ -148,8 +176,8 @@
         }
 
         #current-personality {
-            padding-left: 2cm;
-            font-size: medium;
+            padding-left: 0.2cm;
+            font-size: large;
         }
 
         .new-chat-btn {
@@ -216,6 +244,7 @@
             cursor: pointer;
             opacity: 0;
             transition: opacity 0.3s;
+            
         }
 
         .conversation-item:hover .edit-conversation {
@@ -253,8 +282,13 @@
             display: flex;
             flex-direction: column;
             background: #0f0f0f;
-        
+            padding-left: 3cm; 
+            transition: padding-left 200ms ease;
         }
+
+        
+
+        
 
         .welcome-screen {
             flex: 1;
@@ -672,10 +706,14 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <div class="logo">
-            <i class="fas fa-robot"></i>
-            Ellora AI
-        </div>
+        <!-- Logo -->
+            <div class="flex items-center mb-8">
+                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <h1 class="text-xl font-bold gradient-text">Ellora AI</h1>
+            </div>
+
         <div class="header-right">
             <div class="user-info">
                 <i class="fas fa-user"></i>
@@ -689,8 +727,19 @@
 
     <!-- Main Container -->
     <div class="main-container">
+        <!-- Sidebar open button -->
+        <button id="openSidebarBtn" class="fixed top-12 left-4 z-80 bg-black-600 text-white rounded-full p-3 shadow-lg "                 style="display:none;" title="Open sidebar">
+        <i class="fas fa-bars"></i>
+        </button>
+
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div id="sidebar" class="fixed left-0 top-12 w-72 h-full sidebar transform -translate-x-full transition-transform duration-300 z-50">
+
+            <!-- Sidebar close button -->
+            <button id="closeSidebarBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white " title="Hide sidebar">
+            <i class="fas fa-times text-2xl"></i>
+            </button>
+            
             
             <!-- Personality Selection -->
             <div class="mb-6">
@@ -712,7 +761,7 @@
         </div>
 
         <!-- Chat Area -->
-        <div class="chat-area">
+        <div class="chat-area" id="chatarea">
             <!-- Welcome Screen -->
             <div class="welcome-screen" id="welcomeScreen">
                 <h1 class="welcome-title">Hello, I'm Ellora</h1>
@@ -1389,6 +1438,61 @@
                 closeShareModal();
             }
         });
+
+
+        //sdiebar functionality
+            const sidebar   = document.getElementById('sidebar');
+            const closeBtn  = document.getElementById('closeSidebarBtn');
+            const openBtn   = document.getElementById('openSidebarBtn');
+
+            // Helper: Hide sidebar (mobile)
+            function hideSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                openBtn.style.display = 'block';
+                
+            }
+                // Helper: Show sidebar (mobile)
+                function showSidebar() {
+                    sidebar.classList.remove('-translate-x-full');
+                    openBtn.style.display = 'none';
+
+                    const chatarea = document.getElementById('chatarea');
+                    chatarea?.classList.add('chat-area');
+                }
+
+                closeBtn?.addEventListener('click', hideSidebar);
+                openBtn?.addEventListener('click', showSidebar);
+
+                // Optional: Hide sidebar by default on mobile when page loads
+                if (window.innerWidth <= 1024) {
+                    hideSidebar();
+                }
+
+                if (window.innerWidth > 1024) {
+                    showSidebar();
+                } else {
+                    hideSidebar();
+                }
+
+
+                // Optional: Hide sidebar when clicking outside on mobile
+                document.addEventListener('click', function(e) {
+                    // Only on mobile, and only if sidebar is open and click is outside
+                    if(window.innerWidth <= 1024 && !sidebar.classList.contains('-translate-x-full')) {
+                        if (!sidebar.contains(e.target) && !openBtn.contains(e.target)) {
+                            hideSidebar();
+                        }
+                    }
+                });
+
+            // Optional: Auto-hide/sidebar on resize
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth > 1024) {
+                        showSidebar();
+                    } else {
+                        hideSidebar();
+                    }
+                });
     </script>
 </body>
 </html>
